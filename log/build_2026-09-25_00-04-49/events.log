@@ -1,0 +1,59 @@
+[0.000000] (-) TimerEvent: {}
+[0.003943] (project1_ros) JobQueued: {'identifier': 'project1_ros', 'dependencies': OrderedDict()}
+[0.004032] (project1_ros) JobStarted: {'identifier': 'project1_ros'}
+[0.101646] (-) TimerEvent: {}
+[0.202461] (-) TimerEvent: {}
+[0.306245] (-) TimerEvent: {}
+[0.407035] (-) TimerEvent: {}
+[0.508666] (-) TimerEvent: {}
+[0.611280] (-) TimerEvent: {}
+[0.717731] (-) TimerEvent: {}
+[0.818330] (-) TimerEvent: {}
+[0.919484] (-) TimerEvent: {}
+[1.021191] (-) TimerEvent: {}
+[1.122304] (-) TimerEvent: {}
+[1.223814] (-) TimerEvent: {}
+[1.324325] (-) TimerEvent: {}
+[1.426091] (-) TimerEvent: {}
+[1.528344] (-) TimerEvent: {}
+[1.639371] (-) TimerEvent: {}
+[1.740066] (-) TimerEvent: {}
+[1.764565] (project1_ros) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../build/project1_ros', 'build', '--build-base', '/home/jokeren/Documents/ItIR/Project-1/build/project1_ros/build', 'install', '--record', '/home/jokeren/Documents/ItIR/Project-1/build/project1_ros/install.log', '--install-scripts', '$base/lib/project1_ros', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/jokeren/Documents/ItIR/Project-1/src/project1_ros', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'GZ_SIM_RESOURCE_PATH': '/opt/ros/jazzy/share', 'USER': 'jokeren', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/jokeren', 'OLDPWD': '/home/jokeren/Documents/ItIR/Project-1', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2145', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'COLCON_PREFIX_PATH': '/home/jokeren/Documents/ItIR/Project-1/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'jokeren', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'jokeren', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/Ubuntu:@/tmp/.ICE-unix/2098,unix/Ubuntu:/tmp/.ICE-unix/2098', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/ee903f8b_4d96_47f5_9826_f0662e8d9f79', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.VWKKW3', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.122', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'ROS_DOMAIN_ID': '0', 'AMENT_PREFIX_PATH': '/home/jokeren/Documents/ItIR/Project-1/install/project1_ros:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/jokeren/Documents/ItIR/Project-1/build/project1_ros', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/jokeren/Documents/ItIR/Project-1/build/project1_ros/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages:/home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}, 'shell': False}
+[1.840618] (-) TimerEvent: {}
+[1.941181] (-) TimerEvent: {}
+[2.044268] (-) TimerEvent: {}
+[2.145228] (-) TimerEvent: {}
+[2.246161] (-) TimerEvent: {}
+[2.275852] (project1_ros) StdoutLine: {'line': b'running egg_info\n'}
+[2.311767] (project1_ros) StdoutLine: {'line': b'writing ../../build/project1_ros/project1_ros.egg-info/PKG-INFO\n'}
+[2.312277] (project1_ros) StdoutLine: {'line': b'writing dependency_links to ../../build/project1_ros/project1_ros.egg-info/dependency_links.txt\n'}
+[2.312372] (project1_ros) StdoutLine: {'line': b'writing entry points to ../../build/project1_ros/project1_ros.egg-info/entry_points.txt\n'}
+[2.312452] (project1_ros) StdoutLine: {'line': b'writing requirements to ../../build/project1_ros/project1_ros.egg-info/requires.txt\n'}
+[2.312527] (project1_ros) StdoutLine: {'line': b'writing top-level names to ../../build/project1_ros/project1_ros.egg-info/top_level.txt\n'}
+[2.347283] (-) TimerEvent: {}
+[2.389386] (project1_ros) StdoutLine: {'line': b"reading manifest file '../../build/project1_ros/project1_ros.egg-info/SOURCES.txt'\n"}
+[2.392294] (project1_ros) StdoutLine: {'line': b"writing manifest file '../../build/project1_ros/project1_ros.egg-info/SOURCES.txt'\n"}
+[2.398402] (project1_ros) StdoutLine: {'line': b'running build\n'}
+[2.398760] (project1_ros) StdoutLine: {'line': b'running build_py\n'}
+[2.398962] (project1_ros) StdoutLine: {'line': b'copying project1_ros/bumper_tracker.py -> /home/jokeren/Documents/ItIR/Project-1/build/project1_ros/build/lib/project1_ros\n'}
+[2.399395] (project1_ros) StdoutLine: {'line': b'running install\n'}
+[2.410812] (project1_ros) StdoutLine: {'line': b'running install_lib\n'}
+[2.443975] (project1_ros) StdoutLine: {'line': b'copying /home/jokeren/Documents/ItIR/Project-1/build/project1_ros/build/lib/project1_ros/bumper_tracker.py -> /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages/project1_ros\n'}
+[2.445686] (project1_ros) StdoutLine: {'line': b'byte-compiling /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages/project1_ros/bumper_tracker.py to bumper_tracker.cpython-312.pyc\n'}
+[2.447827] (-) TimerEvent: {}
+[2.449722] (project1_ros) StdoutLine: {'line': b'running install_data\n'}
+[2.449916] (project1_ros) StdoutLine: {'line': b'copying package.xml -> /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/share/project1_ros\n'}
+[2.450008] (project1_ros) StdoutLine: {'line': b'running install_egg_info\n'}
+[2.482589] (project1_ros) StdoutLine: {'line': b"removing '/home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages/project1_ros-0.0.0-py3.12.egg-info' (and everything under it)\n"}
+[2.482928] (project1_ros) StdoutLine: {'line': b'Copying ../../build/project1_ros/project1_ros.egg-info to /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages/project1_ros-0.0.0-py3.12.egg-info\n'}
+[2.490192] (project1_ros) StdoutLine: {'line': b'running install_scripts\n'}
+[2.549182] (-) TimerEvent: {}
+[2.651232] (-) TimerEvent: {}
+[2.729227] (project1_ros) StdoutLine: {'line': b'Installing bumper_tracker script to /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/project1_ros\n'}
+[2.729537] (project1_ros) StdoutLine: {'line': b'Installing distance_tracker script to /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/project1_ros\n'}
+[2.729673] (project1_ros) StdoutLine: {'line': b"writing list of installed files to '/home/jokeren/Documents/ItIR/Project-1/build/project1_ros/install.log'\n"}
+[2.751597] (-) TimerEvent: {}
+[2.854490] (-) TimerEvent: {}
+[2.861273] (project1_ros) CommandEnded: {'returncode': 0}
+[2.878095] (project1_ros) JobEnded: {'identifier': 'project1_ros', 'rc': 0}
+[2.879264] (-) EventReactorShutdown: {}

@@ -1,0 +1,3 @@
+[console_scripts]
+bumper_tracker = project1_ros.bumper_tracker:main
+distance_tracker = project1_ros.distance_tracker:main
