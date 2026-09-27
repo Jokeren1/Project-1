@@ -27,6 +27,7 @@ setup(
         'distance_tracker = project1_ros.distance_tracker:main',
         'bumper_tracker = project1_ros.bumper_tracker:main',
         'keyboard_control = project1_ros.keyboard_control:main',
+	'reactive_controller = project1_ros.reactive_controller:main',
         ],
     },
 )
