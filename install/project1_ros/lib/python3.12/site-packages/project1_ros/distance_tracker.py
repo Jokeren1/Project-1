@@ -3,6 +3,7 @@ import math
 import rclpy
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
+from std_msgs.msg import Bool
 
 
 class DistanceTracker(Node):
@@ -14,6 +15,12 @@ class DistanceTracker(Node):
             Odometry,
             '/odom',
             self.odom_callback,
+            10
+        )
+
+        self.one_foot_publisher = self.create_publisher(
+            Bool,
+            '/one_foot_traveled',
             10
         )
 
@@ -38,7 +45,9 @@ class DistanceTracker(Node):
         dx = current_x - self.previous_x
         dy = current_y - self.previous_y
 
-        distance_step = math.sqrt(dx ** 2 + dy ** 2)
+        distance_step = math.sqrt(
+            dx ** 2 + dy ** 2
+        )
 
         self.distance_traveled += distance_step
 
@@ -46,7 +55,16 @@ class DistanceTracker(Node):
         self.previous_y = current_y
 
         if self.distance_traveled >= self.one_foot_meters:
-            self.get_logger().info('Robot traveled approximately 1 foot')
+
+            self.get_logger().info(
+                'Robot traveled approximately 1 foot'
+            )
+
+            message = Bool()
+            message.data = True
+
+            self.one_foot_publisher.publish(message)
+
             self.distance_traveled = 0.0
 
 
@@ -55,10 +73,15 @@ def main(args=None):
 
     node = DistanceTracker()
 
-    rclpy.spin(node)
+    try:
+        rclpy.spin(node)
 
-    node.destroy_node()
-    rclpy.shutdown()
+    except KeyboardInterrupt:
+        pass
+
+    finally:
+        node.destroy_node()
+        rclpy.try_shutdown()
 
 
 if __name__ == '__main__':

@@ -12,6 +12,7 @@ project1_ros/__init__.py
 project1_ros/bumper_tracker.py
 project1_ros/distance_tracker.py
 project1_ros/keyboard_control.py
+project1_ros/reactive_controller.py
 resource/project1_ros
 test/test_copyright.py
 test/test_flake8.py

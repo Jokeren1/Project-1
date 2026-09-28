@@ -1,0 +1,29 @@
+running egg_info
+writing ../../build/project1_ros/project1_ros.egg-info/PKG-INFO
+writing dependency_links to ../../build/project1_ros/project1_ros.egg-info/dependency_links.txt
+writing entry points to ../../build/project1_ros/project1_ros.egg-info/entry_points.txt
+writing requirements to ../../build/project1_ros/project1_ros.egg-info/requires.txt
+writing top-level names to ../../build/project1_ros/project1_ros.egg-info/top_level.txt
+reading manifest file '../../build/project1_ros/project1_ros.egg-info/SOURCES.txt'
+writing manifest file '../../build/project1_ros/project1_ros.egg-info/SOURCES.txt'
+running build
+running build_py
+copying project1_ros/distance_tracker.py -> /home/jokeren/Documents/ItIR/Project-1/build/project1_ros/build/lib/project1_ros
+copying project1_ros/reactive_controller.py -> /home/jokeren/Documents/ItIR/Project-1/build/project1_ros/build/lib/project1_ros
+running install
+running install_lib
+copying /home/jokeren/Documents/ItIR/Project-1/build/project1_ros/build/lib/project1_ros/distance_tracker.py -> /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages/project1_ros
+copying /home/jokeren/Documents/ItIR/Project-1/build/project1_ros/build/lib/project1_ros/reactive_controller.py -> /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages/project1_ros
+byte-compiling /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages/project1_ros/distance_tracker.py to distance_tracker.cpython-312.pyc
+byte-compiling /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages/project1_ros/reactive_controller.py to reactive_controller.cpython-312.pyc
+running install_data
+copying package.xml -> /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/share/project1_ros
+running install_egg_info
+removing '/home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages/project1_ros-0.0.0-py3.12.egg-info' (and everything under it)
+Copying ../../build/project1_ros/project1_ros.egg-info to /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/python3.12/site-packages/project1_ros-0.0.0-py3.12.egg-info
+running install_scripts
+Installing bumper_tracker script to /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/project1_ros
+Installing distance_tracker script to /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/project1_ros
+Installing keyboard_control script to /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/project1_ros
+Installing reactive_controller script to /home/jokeren/Documents/ItIR/Project-1/install/project1_ros/lib/project1_ros
+writing list of installed files to '/home/jokeren/Documents/ItIR/Project-1/build/project1_ros/install.log'
