@@ -17,10 +17,10 @@ class ReactiveController(Node):
     Behavior priority:
     1. Halt on bumper collision
     2. Keyboard control
-    3. Escape
-    4. Avoid
-    5. Random turn
-    6. Forward
+    3. Escape from symmetric obstacles
+    4. Avoid asymmetric obstacles
+    5. Random turn after 1 foot
+    6. Drive forward
     """
 
     def __init__(self):
@@ -30,6 +30,7 @@ class ReactiveController(Node):
         # ROS interfaces
         # ---------------------------------------------------------
 
+        # LiDAR data used for escape and avoidance behaviors.
         self.scan_subscription = self.create_subscription(
             LaserScan,
             '/scan',
@@ -37,6 +38,8 @@ class ReactiveController(Node):
             10
         )
 
+        # Event sent by distance_tracker after approximately
+        # one foot of movement.
         self.distance_subscription = self.create_subscription(
             Bool,
             '/one_foot_traveled',
@@ -44,6 +47,7 @@ class ReactiveController(Node):
             10
         )
 
+        # Manual movement commands from keyboard_control.
         self.keyboard_subscription = self.create_subscription(
             Twist,
             '/keyboard_cmd_vel',
@@ -51,6 +55,7 @@ class ReactiveController(Node):
             10
         )
 
+        # Gazebo contact information for the TurtleBot bumper.
         self.bumper_subscription = self.create_subscription(
             Contacts,
             '/bumper_contact',
@@ -58,15 +63,17 @@ class ReactiveController(Node):
             10
         )
 
-        # This controller is the final behavior arbiter, so all
-        # movement commands are published to the real robot topic.
+        # The TurtleBot simulation accepts an unstamped Twist on
+        # /cmd_vel_unstamped. motion_control consumes this topic
+        # and applies the command to the simulated robot.
         self.cmd_publisher = self.create_publisher(
             Twist,
-            '/cmd_vel',
+            '/cmd_vel_unstamped',
             10
         )
 
-        # Main behavior loop runs at 10 Hz.
+        # Run behavior arbitration at 10 Hz.
+        # 0.1 seconds between updates = 10 updates per second.
         self.control_timer = self.create_timer(
             0.1,
             self.control_loop
@@ -76,15 +83,22 @@ class ReactiveController(Node):
         # Project constants
         # ---------------------------------------------------------
 
-        # 1 foot in meters.
+        # 0.3048 meters = exactly 1 foot.
+        # The assignment requires obstacle reactions for objects
+        # within 1 foot of the robot.
         self.obstacle_distance = 0.3048
 
-        # Robot motion speeds.
+        # Forward driving speed in meters per second.
+        # Kept relatively slow so the robot has time to react
+        # to obstacles detected by the LiDAR.
         self.forward_speed = 0.15
+
+        # Turning speed in radians per second.
+        # Used by avoid, escape, and random-turn behaviors.
         self.turn_speed = 0.5
 
-        # Left and right distances within 8 cm are treated
-        # as roughly symmetric.
+        # Left and right distances that differ by no more than
+        # 0.08 m (8 cm) are treated as roughly symmetric.
         self.symmetry_tolerance = 0.08
 
         # ---------------------------------------------------------
@@ -95,8 +109,9 @@ class ReactiveController(Node):
         self.keyboard_active = False
         self.last_keyboard_time = None
 
-        # If no new keyboard command arrives for this amount of
-        # time, return control to the autonomous behaviors.
+        # Keyboard commands temporarily override autonomous
+        # behaviors. If no new command arrives for 0.5 seconds,
+        # autonomous control resumes.
         self.keyboard_timeout = 0.5
 
         # ---------------------------------------------------------
@@ -106,10 +121,10 @@ class ReactiveController(Node):
         self.bumper_active = False
         self.last_bumper_time = None
 
-        # /bumper_contact publishes repeatedly while contact is
-        # occurring. If messages stop for this long, consider the
-        # bumper released.
-        self.bumper_timeout = 0.25
+        # /bumper_contact repeatedly publishes while contact exists.
+        # If no new bumper message arrives for 0.30 seconds,
+        # the collision is considered cleared.
+        self.bumper_clear_timeout = 0.30
 
         # ---------------------------------------------------------
         # LiDAR state
@@ -122,8 +137,37 @@ class ReactiveController(Node):
         self.center_distance = float('inf')
         self.right_distance = float('inf')
 
-        # Used to prevent the same stale LiDAR scan from
-        # repeatedly triggering escape.
+        # The simulated LiDAR gives a full 360-degree scan.
+        #
+        # TF testing showed that its frame is rotated +90 degrees
+        # relative to base_link. Because of that:
+        #
+        #     TurtleBot forward = approximately -90 degrees
+        #     in the LaserScan coordinate frame.
+        #
+        # Only the front 90 degrees are used for obstacle behavior.
+        # This prevents walls beside or behind the robot from causing
+        # it to keep turning long after they are no longer in its path.
+        #
+        # LiDAR-relative sectors:
+        #
+        #     right:  -135 to -105 degrees
+        #     center: -105 to  -75 degrees
+        #     left:    -75 to  -45 degrees
+        #
+        # These correspond to robot-relative:
+        #
+        #     right:  -45 to -15 degrees
+        #     center: -15 to +15 degrees
+        #     left:   +15 to +45 degrees
+        #
+        # The simulated LiDAR has a minimum valid range around
+        # 0.164 m. Very close objects can therefore fall inside
+        # the LiDAR blind region, which is why bumper detection
+        # remains the highest-priority behavior.
+
+        # Used to prevent one stale LiDAR scan from immediately
+        # triggering another escape after an escape completes.
         self.waiting_for_new_scan_after_escape = False
         self.escape_completion_scan_number = -1
 
@@ -134,11 +178,14 @@ class ReactiveController(Node):
         self.escape_active = False
         self.escape_end_time = None
 
-        # Escape target: approximately 180 degrees.
+        # pi radians = 180 degrees.
+        # The assignment specifies an escape direction of
+        # approximately 180 +/- 30 degrees.
         self.escape_angle = math.pi
 
-        # Approximate turn duration:
-        # time = angle / angular velocity
+        # Approximate time needed to rotate 180 degrees:
+        #
+        # duration = angle / angular velocity
         self.escape_duration = (
             self.escape_angle / self.turn_speed
         )
@@ -166,14 +213,9 @@ class ReactiveController(Node):
         """
         Process the front 90 degrees of the LiDAR.
 
-        Front-right:
-            -45 to -15 degrees
-
-        Front-center:
-            -15 to +15 degrees
-
-        Front-left:
-            +15 to +45 degrees
+        Because the LiDAR frame is rotated +90 degrees relative
+        to base_link, -90 degrees in /scan corresponds to the
+        TurtleBot's forward direction.
         """
 
         self.scan_received = True
@@ -185,33 +227,41 @@ class ReactiveController(Node):
 
         for i, distance in enumerate(msg.ranges):
 
-            # Ignore NaN and infinite measurements.
+            # Ignore NaN and infinite readings.
             if math.isnan(distance) or math.isinf(distance):
                 continue
 
-            # Ignore measurements outside the sensor's valid range.
+            # Ignore readings outside the sensor's valid range.
             if distance < msg.range_min or distance > msg.range_max:
                 continue
 
             angle = (
-                msg.angle_min +
-                (i * msg.angle_increment)
+                msg.angle_min
+                + (i * msg.angle_increment)
             )
 
             angle_degrees = math.degrees(angle)
 
-            # Front-right sector.
-            if -45.0 <= angle_degrees < -15.0:
+            # Front-right:
+            # Robot-relative -45 through -15 degrees.
+            # LiDAR-relative -135 through -105 degrees.
+            if -135.0 <= angle_degrees < -105.0:
                 right_ranges.append(distance)
 
-            # Front-center sector.
-            elif -15.0 <= angle_degrees <= 15.0:
+            # Front-center:
+            # Robot-relative -15 through +15 degrees.
+            # LiDAR-relative -105 through -75 degrees.
+            elif -105.0 <= angle_degrees <= -75.0:
                 center_ranges.append(distance)
 
-            # Front-left sector.
-            elif 15.0 < angle_degrees <= 45.0:
+            # Front-left:
+            # Robot-relative +15 through +45 degrees.
+            # LiDAR-relative -75 through -45 degrees.
+            elif -75.0 < angle_degrees <= -45.0:
                 left_ranges.append(distance)
 
+        # Store the closest obstacle in each front region.
+        # infinity means no valid obstacle was detected there.
         self.left_distance = (
             min(left_ranges)
             if left_ranges
@@ -230,8 +280,8 @@ class ReactiveController(Node):
             else float('inf')
         )
 
-        # If escape previously completed, require a new scan
-        # before allowing another escape to trigger.
+        # After an escape completes, require at least one newer
+        # LiDAR scan before allowing another escape to start.
         if (
             self.waiting_for_new_scan_after_escape
             and self.scan_number > self.escape_completion_scan_number
@@ -240,8 +290,8 @@ class ReactiveController(Node):
 
     def one_foot_callback(self, msg):
         """
-        Receive notification that the robot has traveled
-        approximately one foot.
+        Request a random turn when the distance tracker reports
+        approximately one foot of movement.
         """
 
         if msg.data:
@@ -253,7 +303,7 @@ class ReactiveController(Node):
 
     def keyboard_callback(self, msg):
         """
-        Store the most recent keyboard movement command.
+        Store the newest keyboard movement command.
         """
 
         self.keyboard_command = msg
@@ -262,7 +312,7 @@ class ReactiveController(Node):
 
     def bumper_callback(self, msg):
         """
-        Detect a collision involving the TurtleBot bumper.
+        Detect contact involving the TurtleBot bumper.
         """
 
         for contact in msg.contacts:
@@ -274,8 +324,12 @@ class ReactiveController(Node):
                 or
                 'turtlebot4::bumper::bumper_collision' in collision2
             ):
+                # Repeated contact messages continually update this
+                # timestamp, keeping the halt behavior active for
+                # as long as physical contact remains.
                 self.bumper_active = True
                 self.last_bumper_time = self.current_time_seconds()
+
                 return
 
     # -------------------------------------------------------------
@@ -284,34 +338,37 @@ class ReactiveController(Node):
 
     def control_loop(self):
         """
-        Select and execute the highest-priority behavior.
+        Select and execute the highest-priority active behavior.
         """
 
         current_time = self.current_time_seconds()
 
         # ---------------------------------------------------------
-        # Priority 1: Halt on bumper collision
+        # Priority 1: Bumper halt
         # ---------------------------------------------------------
 
         if self.bumper_active:
+
             if (
                 self.last_bumper_time is not None
                 and
                 current_time - self.last_bumper_time
-                <= self.bumper_timeout
+                <= self.bumper_clear_timeout
             ):
                 self.stop_robot()
                 return
 
-            # No recent bumper contact message, so the collision
-            # is considered finished.
+            # Contact has cleared.
+            # Return control to the remaining behaviors.
             self.bumper_active = False
+            self.last_bumper_time = None
 
         # ---------------------------------------------------------
         # Priority 2: Keyboard control
         # ---------------------------------------------------------
 
         if self.keyboard_active:
+
             if (
                 self.last_keyboard_time is not None
                 and
@@ -323,11 +380,11 @@ class ReactiveController(Node):
                 )
                 return
 
-            # No recent keyboard command, so return control
-            # to autonomous behavior.
+            # No recent keyboard command, so autonomous control
+            # is allowed to resume.
             self.keyboard_active = False
 
-        # Autonomous behaviors require LiDAR information.
+        # Autonomous behaviors require a real LiDAR scan.
         if not self.scan_received:
             return
 
@@ -335,8 +392,9 @@ class ReactiveController(Node):
         # Priority 3: Escape
         # ---------------------------------------------------------
 
-        # Escape is a fixed-action pattern. Once it begins,
-        # it continues even if the triggering obstacle changes.
+        # Escape is a fixed-action pattern.
+        # Once it starts, it continues even if the original
+        # triggering stimulus changes.
         if self.escape_active:
             self.continue_escape()
             return
@@ -355,6 +413,8 @@ class ReactiveController(Node):
         # Priority 4: Avoid
         # ---------------------------------------------------------
 
+        # Avoid is reflexive and only continues while the
+        # asymmetric obstacle remains within the front region.
         if obstacle_present:
             self.avoid_obstacle()
             return
@@ -383,8 +443,8 @@ class ReactiveController(Node):
 
     def obstacle_in_front(self):
         """
-        Return True if any front LiDAR sector contains
-        an obstacle within one foot.
+        Return True when an obstacle is detected within the
+        required 1-foot distance in any front LiDAR region.
         """
 
         return (
@@ -397,8 +457,8 @@ class ReactiveController(Node):
 
     def is_symmetric_obstacle(self):
         """
-        Determine whether the obstacle arrangement in front
-        of the robot is roughly symmetric.
+        Determine whether the obstacle arrangement is roughly
+        symmetric across the robot's forward direction.
         """
 
         left_close = (
@@ -413,22 +473,23 @@ class ReactiveController(Node):
             self.right_distance <= self.obstacle_distance
         )
 
-        # There must be nearby obstacles on both sides
-        # for the situation to be considered symmetric.
+        # A symmetric obstacle should appear on both the left
+        # and right sides of the forward-facing region.
         if not left_close or not right_close:
             return False
 
         difference = abs(
-            self.left_distance -
-            self.right_distance
+            self.left_distance
+            - self.right_distance
         )
 
-        # Similar left/right distances indicate symmetry.
+        # Left and right readings within 8 cm of each other
+        # are treated as roughly symmetric.
         if difference <= self.symmetry_tolerance:
             return True
 
-        # If the center is blocked too, allow slightly
-        # more difference between the two sides.
+        # If the center is blocked as well, allow slightly more
+        # difference between the left and right measurements.
         if (
             center_close
             and difference <= self.symmetry_tolerance * 2.0
@@ -459,8 +520,13 @@ class ReactiveController(Node):
 
     def avoid_obstacle(self):
         """
-        Reflexively turn away from an asymmetric obstacle.
+        Reflexively turn away from the closer side of an
+        asymmetric obstacle.
         """
+
+        self.get_logger().info(
+            'Behavior: AVOID'
+        )
 
         command = Twist()
 
@@ -468,17 +534,18 @@ class ReactiveController(Node):
 
         if self.left_distance < self.right_distance:
             # Obstacle is closer on the left.
-            # Turn right.
+            # Negative angular velocity turns the robot right.
             command.angular.z = -self.turn_speed
 
         elif self.right_distance < self.left_distance:
             # Obstacle is closer on the right.
-            # Turn left.
+            # Positive angular velocity turns the robot left.
             command.angular.z = self.turn_speed
 
         else:
-            # Fallback if distances happen to match but
-            # the pattern was not classified as symmetric.
+            # If both sides happen to match but the obstacle was
+            # not classified as symmetric, choose one consistent
+            # direction rather than remaining stationary.
             command.angular.z = self.turn_speed
 
         self.cmd_publisher.publish(command)
@@ -489,8 +556,7 @@ class ReactiveController(Node):
 
     def start_escape(self):
         """
-        Begin a fixed-action escape turn of approximately
-        180 degrees.
+        Begin an approximately 180-degree fixed-action turn.
         """
 
         self.escape_active = True
@@ -498,8 +564,8 @@ class ReactiveController(Node):
         current_time = self.current_time_seconds()
 
         self.escape_end_time = (
-            current_time +
-            self.escape_duration
+            current_time
+            + self.escape_duration
         )
 
         self.get_logger().info(
@@ -508,8 +574,8 @@ class ReactiveController(Node):
 
     def continue_escape(self):
         """
-        Continue the fixed-action escape until its target
-        duration has completed.
+        Continue the escape until the approximate 180-degree
+        turn has completed.
         """
 
         current_time = self.current_time_seconds()
@@ -519,8 +585,6 @@ class ReactiveController(Node):
             self.escape_active = False
             self.escape_end_time = None
 
-            # Record which scan was current when escape ended.
-            # Another escape cannot begin until a newer scan arrives.
             self.escape_completion_scan_number = self.scan_number
             self.waiting_for_new_scan_after_escape = True
 
@@ -545,13 +609,15 @@ class ReactiveController(Node):
 
     def start_random_turn(self):
         """
-        Start a uniformly random turn in the range
-        -15 degrees through +15 degrees.
+        Start a uniformly sampled turn between -15 and +15
+        degrees as required by the assignment.
         """
 
         self.random_turn_requested = False
         self.random_turn_active = True
 
+        # Uniformly choose an angle within the required
+        # +/-15 degree range.
         angle_degrees = random.uniform(
             -15.0,
             15.0
@@ -561,21 +627,27 @@ class ReactiveController(Node):
             angle_degrees
         )
 
+        # Positive angular velocity turns left.
+        # Negative angular velocity turns right.
         if self.random_turn_angle >= 0.0:
             self.random_turn_direction = 1.0
         else:
             self.random_turn_direction = -1.0
 
+        # The robot accepts angular velocity rather than an
+        # absolute target heading, so turn time is approximated by:
+        #
+        # duration = angle / angular velocity
         turn_duration = (
-            abs(self.random_turn_angle) /
-            self.turn_speed
+            abs(self.random_turn_angle)
+            / self.turn_speed
         )
 
         current_time = self.current_time_seconds()
 
         self.random_turn_end_time = (
-            current_time +
-            turn_duration
+            current_time
+            + turn_duration
         )
 
         self.get_logger().info(
@@ -585,8 +657,8 @@ class ReactiveController(Node):
 
     def continue_random_turn(self):
         """
-        Continue the random turn until the selected
-        angle has approximately been completed.
+        Continue the random turn until its calculated duration
+        has completed.
         """
 
         current_time = self.current_time_seconds()
@@ -607,10 +679,9 @@ class ReactiveController(Node):
         command = Twist()
 
         command.linear.x = 0.0
-
         command.angular.z = (
-            self.random_turn_direction *
-            self.turn_speed
+            self.random_turn_direction
+            * self.turn_speed
         )
 
         self.cmd_publisher.publish(command)
@@ -625,13 +696,13 @@ class ReactiveController(Node):
         """
 
         return (
-            self.get_clock().now().nanoseconds /
-            1_000_000_000.0
+            self.get_clock().now().nanoseconds
+            / 1_000_000_000.0
         )
 
     def stop_robot(self):
         """
-        Publish a zero-velocity command.
+        Publish zero linear and angular velocity.
         """
 
         command = Twist()
